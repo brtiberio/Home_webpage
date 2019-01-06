@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="Gestão aquecimento" content="">
+    <meta name="Bruno Tibério" content="">
+    <link rel="icon" href="favicon/favicon.ico">
+    <title>Gestão aquecimento</title>
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="css/styles.css" rel="stylesheet">
+    <!-- favicon items -->
+    <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/manifest.json">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preload"  href="fonts/digital-7-mono.ttf">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+    <!-- Chrome, Firefox OS and Opera -->
+    <meta name="theme-color" content="#009DE0">
+    <!--  Font Awesome -->
+    <link rel="stylesheet" href="css/fontawesome.css">
+    <link rel="stylesheet" href="css/fonts.css">
+</head>
+<body>
+<div class="container-fluid px-0 text-center">
+    <!-- Navbar  -->
+    <!-- NAVIGATION BAR-->
+    <nav class="navbar navbar-expand-md navbar-light bg-light rounded">
+    <span class="navbar-brand mb-0 ">
+      <img src="favicon/android-chrome-96x96.png" width="60" alt="">
+    </span><span class="text-dark mb-0 mr-2">Gestão Aquecimento</span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+                aria-controls="navbarCollapse"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <!-- Nav pills -->
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="pill" href="#dashboard">Resumo</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#menu1">Aquecimento</a>
+                </li>
+                <!-- TODO add menu for controlling irrigation
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#menu2">Rega</a>
+                </li>
+                -->
+            </ul>
+        </div>
+    </nav>
+</div>
+<main>
+    <!-- main container for all pieces -->
+    <div class="container-fluid pt-2 px-0 text-center">
+        <div class="card">
+            <div class="card-header text-white color-tecnico">
+                <h5 class="text-center">Ligações</h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="row">
+                    <div class="col-sm-4 text-center">
+                        Servidor
+                        <br>
+                        <div class=" led led-red" id="led_serv_con"></div>
+                    </div>
+                    <div class="col-sm-4 text-center">
+                        Caldeira
+                        <br>
+                        <div class=" led led-red" id="led_caldeira"></div>
+                    </div>
+                    <div class="col-sm-4 text-center">
+                        Cilindro<br>
+                        <div class=" led led-red" id="led_cilindro"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- add row for temperature gauges -->
+    <div class="container text-center">
+        <div class="row p-2">
+            <div class="col-sm-6 align-middle">
+                <canvas id="gauge_cilindro"></canvas>
+            </div>
+            <div class="col-sm-6 align-middle">
+                <canvas id="gauge_caldeira"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <!-- add main tab -->
+        <div id="dashboard" class="container pt-2 text-center tab-pane active">
+            <!-- add row for showing weather temperature -->
+            <div id="wheater_info" class="row px-2">
+                <div class="col-12 px-2 bg-info text-white">Temperatura exterior</div>
+                <div class="col-12 px-2" id="cont_b8346e6d0a54d7cafde6c139a29a73e1">
+                    <script type="text/javascript" async
+                            src="https://www.tempo.pt/wid_loader/b8346e6d0a54d7cafde6c139a29a73e1"></script>
+                </div>
+            </div>
+            <!-- add row for graphics -->
+            <div class="row px-2">
+                <div class="col-12 px-2 bg-info text-white">Temperaturas nas últimas 6 horas</div>
+                <canvas id="graph1" width="100%"></canvas>
+            </div>
+        </div>
+        <!--
+        -----------------------------------------------------------------------------------------------------------
+        add menu1 tab
+        -----------------------------------------------------------------------------------------------------------
+        -->
+        <div id="menu1" class="container pt-2 text-center tab-pane fade">
+            <!-- add card for forced pump circulation -->
+            <div class="card">
+                <div class="card-header text-white bg-info">
+                    <h5>Forçar Circulação</h5>
+                </div>
+                <div class="card-body">
+                    <!-- row for forced cal -->
+                    <div class="row">
+                        <div class="col-8 text-left">
+                            <p>Caldeira</p>
+                        </div>
+                        <div class="col-4 text-center align-middle">
+                            <label class="switch switch-green">
+                                <input id="ForceCal" type="checkbox" class="switch-input" onclick="toggleForceCal();">
+                                <span class="switch-label" data-on="On" data-off="Off"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- row for forced cil -->
+                    <div class="row">
+                        <div class="col-8 text-left">
+                            <p>Cilindro</p>
+                        </div>
+                        <div class="col-4 text-center align-middle">
+                            <label class="switch switch-green">
+                                <input id="ForceCil" type="checkbox" class="switch-input" onclick="toggleForceCil();">
+                                <span class="switch-label" data-on="On" data-off="Off"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-----------------------------------------------------------------------------------------------------
+            Setting timer
+            ------------------------------------------------------------------------------------------------------>
+            <div class="card">
+                <div class="card-header text-white bg-info">
+                    <h5>Configuração Temporizador</h5>
+                </div>
+                <div class="card-body">
+                    <!-- show current config -->
+                    <div class="table-responsive ">
+                        <div class="alert-info col-12">
+                            Configuração atual
+                        </div>
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                            <tr>
+                                <th scope="col">Liga</th>
+                                <th scope="col">Desliga</th>
+                                <th scope="col">Temp. Min</th>
+                                <th scope="col">Offset Temp.</th>
+                                <th scope="col">Estado</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td id="timer_on_value">value</td>
+                                <td id="timer_off_value">value</td>
+                                <td id="timer_min_temp">value</td>
+                                <td id="timer_offset_value">value</td>
+                                <td id="timer_enabled">value</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- row for enabling timer -->
+                    <div class="row">
+                        <div class="col-8 text-left">
+                            <p>Ativar Aquecimento autmático</p>
+                        </div>
+                        <div class="col-4 text-center align-middle">
+                            <label class="switch switch-green">
+                                <input id="heating_auto" type="checkbox" class="switch-input"
+                                       onclick="toggleHeating();">
+                                <span class="switch-label" data-on="Auto" data-off="Off"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-right">
+                    <a id="timer_button" class="btn btn-sm btn-outline-secondary"
+                       onclick="toggleTimerConfig();">Aplicar</a>
+                </div>
+            </div>
+        </div> <!-- END OF MENU 1-->
+        <!--
+        -----------------------------------------------------------------------------------------------------------
+        add menu2 tab
+        -----------------------------------------------------------------------------------------------------------
+        -->
+        <div id="menu2" class="container pt-2 text-center tab-pane fade">
+            <!-- add row for graphics -->
+            <div class="row px-2">
+                <p>Teste menu2</p>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Bootstrap core JavaScript-->
+<!--================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="js/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/paho-mqtt-min.js" type="text/javascript"></script>
+<script src="js/gauge.min.js" type="text/javascript"></script>
+<script src="js/Chart.bundle.min.js"></script>
+<script src="js/internal.js" type="text/javascript"></script>
+</body>
+</html>
