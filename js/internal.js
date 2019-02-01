@@ -1,7 +1,7 @@
 
 function onFailure(err) {
     'use strict';
-    alert(err.errorCode + " " + err.errorMessage);
+    alert("Não foi possivel conectar ao servidor\n" + err.errorCode + " " + err.errorMessage);
 }
 
 // called when the client connects
@@ -21,6 +21,8 @@ function onConnect() {
     client.subscribe("heat/forced/cilindro", {qos: 2});
     client.subscribe("heat/timer/config", {qos: 2});
     client.subscribe("heat/timer/enable", {qos: 2});
+    client.subscribe("heat/timer2/config", {qos: 2});
+    client.subscribe("heat/timer2/enable", {qos: 2});
     // first time here?
     if (client.reconnectTimer !== null)
     {
@@ -55,6 +57,8 @@ function onMessageArrived(message) {
     'use strict';
     let aux;
     let x;
+    let startTime;
+    let endTime;
     switch (message.destinationName) {
         case (baseTopic + "sensor/caldeira"):
             // receive mqtt controller connection status
@@ -127,8 +131,8 @@ function onMessageArrived(message) {
             break;
         case("heat/timer/config"):
             aux = JSON.parse(message.payloadString);
-            const startTime = numberFormat(Math.floor(aux.start / 60), 2) + ":" + numberFormat(aux.start % 60, 2);
-            const endTime = numberFormat(Math.floor(aux.end / 60), 2) + ":" + numberFormat(aux.end % 60, 2);
+            startTime = numberFormat(Math.floor(aux.start / 60), 2) + ":" + numberFormat(aux.start % 60, 2);
+            endTime = numberFormat(Math.floor(aux.end / 60), 2) + ":" + numberFormat(aux.end % 60, 2);
             document.getElementById("timer_enabled").innerText = aux.state;
             document.getElementById("timer_on_value").innerText = startTime;
             document.getElementById("timer_off_value").innerText = endTime;
@@ -145,8 +149,28 @@ function onMessageArrived(message) {
                 }
             }
             break;
+        case("heat/timer2/config"):
+            aux = JSON.parse(message.payloadString);
+            startTime = numberFormat(Math.floor(aux.start / 60), 2) + ":" + numberFormat(aux.start % 60, 2);
+            endTime = numberFormat(Math.floor(aux.end / 60), 2) + ":" + numberFormat(aux.end % 60, 2);
+            document.getElementById("timer2_enabled").innerText = aux.state;
+            document.getElementById("timer2_on_value").innerText = startTime;
+            document.getElementById("timer2_off_value").innerText = endTime;
+            document.getElementById("timer2_offset_value").innerText = aux.offset;
+            document.getElementById("timer2_min_temp").innerText = aux.temp_min;
+            break;
+        case("heat/timer2/enable"):
+            x = document.getElementById("heating2_auto");
+            if (message.payloadString === "auto"){
+                x.checked = true;
+            }else{
+                if(message.payloadString === "stop"){
+                    x.checked = false;
+                }
+            }
+            break;
         default:
-            console.log("Message Recieved: Topic: ", message.destinationName, ". Payload: ", message.payloadString, ". QoS: ", message.qos);
+            console.log("Message Received: Topic: ", message.destinationName, ". Payload: ", message.payloadString, ". QoS: ", message.qos);
     }
 }
 
@@ -175,7 +199,6 @@ const path = "/ws";
 const baseTopic = "heat/";
 let connected = false;
 let cleanSession = true;
-let retained = false;
 let labels = [];
 let tempCil = [];
 let tempCal = [];
@@ -349,22 +372,217 @@ function toggleForceCil(){
     }
 }
 
-function toggleTimerConfig(){
-    console.log("In here!");
+function toggleTimerConfig(id){
+    let x = null;
+    let i = 0;
+    if (id === 1){
+        // configure timer 1
+        // get timer1 start settings element
+        x = document.getElementsByName("timer1_start_selection");
+
+        while(i< x.length) {
+            // find the checked value
+            if (x[i].checked === true) {
+                // config the message to be sent
+                switch(x[i].value) {
+                    case "dawn":
+                        console.log("Timer1 start settings: " + x[i].value);
+                        client.send("heat/timer/enable", "on_override " + "dawn", 2, true);
+                        break;
+                    case "dusk":
+                        console.log("Timer1 start settings: " + x[i].value);
+                        client.send("heat/timer/enable", "on_override " + "dusk", 2, true);
+                        break;
+                    case "timer":
+                        console.log("Timer1 start settings: " + x[i].value);
+                        x = document.getElementById("timer1_start_time").value;
+                        // remove seconds values
+                        x.slice(0, -3);
+                        x = "on_override " + x;
+                        console.log(x)
+                        client.send("heat/timer/enable", x, 2, true);
+                        break;
+                    default:
+                        console.log("Timer1 start settings: unknown");
+                }
+                break;
+            }
+            i++;
+        }
+        // get timer1 end settings element
+        x = document.getElementsByName("timer1_end_selection");
+        // reset i
+        i = 0;
+        while(i< x.length) {
+            // find the checked value
+            if (x[i].checked === true) {
+                // config the message to be sent
+                switch(x[i].value) {
+                    case "dawn":
+                        console.log("Timer1 end settings: " + x[i].value);
+                        client.send("heat/timer/enable", "off_override " + "dawn", 2, true);
+                        break;
+                    case "dusk":
+                        console.log("Timer1 end settings: " + x[i].value);
+                        client.send("heat/timer/enable", "off_override " + "dusk", 2, true);
+                        break;
+                    case "timer":
+                        console.log("Timer1 end settings: " + x[i].value);
+                        x = document.getElementById("timer1_end_time").value;
+                        // remove seconds values
+                        x.slice(0, -3);
+                        x = "off_override " + x;
+                        console.log(x)
+                        client.send("heat/timer/enable", x, 2, true);
+                        break;
+                    default:
+                        console.log("Timer1 end settings: unknown");
+                }
+                break;
+            }
+            i++;
+        }
+        // at the end, sync heating enabled or not because timer do not assume it
+        x=document.getElementById("heating_auto");
+        if(x.checked === true){
+            console.log("Heating 1 on");
+            client.send("heat/timer/enable", "auto", 2, true);
+        }
+        if(x.checked === false){
+            console.log("Heating 1 stopped");
+            client.send("heat/timer/enable", "stop", 2, true);
+        }
+    }else{
+        // configure timer 2
+        // get timer2 start settings element
+        x = document.getElementsByName("timer2_start_selection");
+
+        while(i< x.length) {
+            // find the checked value
+            if (x[i].checked === true) {
+                // config the message to be sent
+                switch(x[i].value) {
+                    case "dawn":
+                        console.log("Timer2 start settings: " + x[i].value);
+                        client.send("heat/timer2/enable", "on_override " + "dawn", 2, true);
+                        break;
+                    case "dusk":
+                        console.log("Timer2 start settings: " + x[i].value);
+                        client.send("heat/timer2/enable", "on_override " + "dusk", 2, true);
+                        break;
+                    case "timer":
+                        console.log("Timer2 start settings: " + x[i].value);
+                        x = document.getElementById("timer2_start_time").value;
+                        // remove seconds values
+                        x.slice(0, -3);
+                        x = "on_override " + x;
+                        console.log(x)
+                        client.send("heat/timer2/enable", x, 2, true);
+                        break;
+                    default:
+                        console.log("Timer2 start settings: unknown");
+                }
+                break;
+            }
+            i++;
+        }
+        // get timer2 end settings element
+        x = document.getElementsByName("timer2_end_selection");
+        // reset i
+        i = 0;
+        while(i< x.length) {
+            // find the checked value
+            if (x[i].checked === true) {
+                // config the message to be sent
+                switch(x[i].value) {
+                    case "dawn":
+                        console.log("Timer2 end settings: " + x[i].value);
+                        client.send("heat/timer2/enable", "off_override " + "dawn", 2, true);
+                        break;
+                    case "dusk":
+                        console.log("Timer2 end settings: " + x[i].value);
+                        client.send("heat/timer2/enable", "off_override " + "dusk", 2, true);
+                        break;
+                    case "timer":
+                        console.log("Timer2 end settings: " + x[i].value);
+                        x = document.getElementById("timer2_end_time").value;
+                        // remove seconds values
+                        x.slice(0, -3);
+                        x = "off_override " + x;
+                        console.log(x)
+                        client.send("heat/timer2/enable", x, 2, true);
+                        break;
+                    default:
+                        console.log("Timer2 end settings: unknown");
+                }
+                break;
+            }
+            i++;
+        }
+        // at the end, sync heating enabled or not because timer do not assume it
+        x=document.getElementById("heating2_auto");
+        if(x.checked === true){
+            console.log("Heating 2 on");
+            client.send("heat/timer2/enable", "auto", 2, true);
+        }
+        if(x.checked === false){
+            console.log("Heating 2 stopped");
+            client.send("heat/timer2/enable", "stop", 2, true);
+        }
+
+    }
 }
 
-function toggleHeating(){
-    var x=document.getElementById("heating_auto");
-    if(x.checked === true){
-        console.log("Heating on");
-        client.send("heat/timer/enable", "auto", 2, true);
-    }
-    if(x.checked === false){
-        console.log("Heating stopped");
-        client.send("heat/timer/enable", "stop", 2, true);
+function toggleHeating(id){
+    let x = null;
+    switch (id){
+        case 1:
+            x=document.getElementById("heating_auto");
+            if(x.checked === true){
+                console.log("Heating 1 on");
+                client.send("heat/timer/enable", "auto", 2, true);
+            }
+            if(x.checked === false){
+                console.log("Heating 1 stopped");
+                client.send("heat/timer/enable", "stop", 2, true);
+            }
+            break;
+        case 2:
+            x=document.getElementById("heating2_auto");
+            if(x.checked === true){
+                console.log("Heating 2 on");
+                client.send("heat/timer2/enable", "auto", 2, true);
+            }
+            if(x.checked === false){
+                console.log("Heating 2 stopped");
+                client.send("heat/timer2/enable", "stop", 2, true);
+            }
+            break;
+        default:
+            console.log("Unknown ID:%d", id);
     }
 }
 
+function toggle_timer(elementId, number, value){
+    switch(number){
+        case 1:
+            if (value){
+                document.getElementById(elementId).removeAttribute("hidden");
+            }else{
+                document.getElementById(elementId).setAttribute("hidden", true);
+            }
+            break;
+        case 2:
+            if (value){
+                document.getElementById(elementId).removeAttribute("hidden");
+            }else{
+                document.getElementById(elementId).setAttribute("hidden",true);
+            }
+            break;
+        default:
+            console.log("Unknown value show_timer number=%d", number);
+    }
+}
 function numberFormat(number, width){
     return new Array(width + 1 - (number + '').length).join('0') + number;
 }

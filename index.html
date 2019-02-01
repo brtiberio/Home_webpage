@@ -164,11 +164,11 @@
                 </div>
             </div>
             <!-----------------------------------------------------------------------------------------------------
-            Setting timer
+            Card for Setting timer 1
             ------------------------------------------------------------------------------------------------------>
             <div class="card">
                 <div class="card-header text-white bg-info">
-                    <h5>Configuração Temporizador</h5>
+                    <h5>Configuração Temporizador 1</h5>
                 </div>
                 <div class="card-body">
                     <!-- show current config -->
@@ -198,23 +198,173 @@
                         </table>
                     </div>
                     <!-- row for enabling timer -->
-                    <div class="row">
+                    <div class="row px-3">
                         <div class="col-8 text-left">
-                            <p>Ativar Aquecimento autmático</p>
+                            <p>Ativar Aquecimento automático</p>
                         </div>
                         <div class="col-4 text-center align-middle">
                             <label class="switch switch-green">
                                 <input id="heating_auto" type="checkbox" class="switch-input"
-                                       onclick="toggleHeating();">
+                                       onclick="toggleHeating(1);">
                                 <span class="switch-label" data-on="Auto" data-off="Off"></span>
                                 <span class="switch-handle"></span>
                             </label>
                         </div>
                     </div>
+                    <!-- row for setting timer start and end -->
+                    <div class="row">
+                        <!-- add card for starting timer -->
+                        <div class="card col-12 border-0">
+                            <div class="card-header text-white text-center bg-info">
+                                Horário 1: inicio
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <label><input type="radio" name="timer1_start_selection" value="dawn" onclick="toggle_timer('timer1_start_config', 2, false);" checked/> Amanhecer </label>
+                                </div>
+                                <div class="row">
+                                    <label><input type="radio" name="timer1_start_selection" value="dusk" onclick="toggle_timer('timer1_start_config', 2, false);"/> Anoitecer </label>
+                                </div>
+                                <div class="row">
+                                    <label><input type="radio" name="timer1_start_selection" value="timer" onclick="toggle_timer('timer1_start_config', 2, true);"/> Horário </label>
+                                </div>
+                                <div class="row" id="timer1_start_config" hidden>
+                                    <div>
+                                        <input class="form-control" type="time" value="18:00" id="timer1_start_time">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- add card for ending timer -->
+                        <div class="card col-12 border-0">
+                            <div class="card-header text-white text-center bg-info">
+                                Horário 1: Fim
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <label><input type="radio" name="timer1_end_selection" value="dawn" onclick="toggle_timer('timer1_end_config', 2, false);" checked/> Amanhecer </label>
+                                </div>
+                                <div class="row">
+                                    <label><input type="radio" name="timer1_end_selection" value="dusk" onclick="toggle_timer('timer1_end_config', 2, false);"/> Anoitecer </label>
+                                </div>
+                                <div class="row">
+                                    <label><input type="radio" name="timer1_end_selection" value="timer" onclick="toggle_timer('timer1_end_config', 2, true);"/> Horário </label>
+                                </div>
+                                <div class="row" id="timer1_end_config" hidden>
+                                    <div>
+                                        <input class="form-control" type="time" value="23:00" id="timer1_end_time">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-footer text-right">
                     <a id="timer_button" class="btn btn-sm btn-outline-secondary"
-                       onclick="toggleTimerConfig();">Aplicar</a>
+                       onclick="toggleTimerConfig(1);">Aplicar</a>
+                </div>
+            </div>
+            <!-----------------------------------------------------------------------------------------------------
+            Card for Setting timer 2
+            ------------------------------------------------------------------------------------------------------>
+            <div class="card">
+                <div class="card-header text-white bg-info">
+                    <h5>Configuração Temporizador 2</h5>
+                </div>
+                <div class="card-body">
+                    <!-- show current config -->
+                    <div class="table-responsive ">
+                        <div class="alert-info col-12">
+                            Configuração atual
+                        </div>
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                            <tr>
+                                <th scope="col">Liga</th>
+                                <th scope="col">Desliga</th>
+                                <th scope="col">Temp. Min</th>
+                                <th scope="col">Offset Temp.</th>
+                                <th scope="col">Estado</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td id="timer2_on_value">value</td>
+                                <td id="timer2_off_value">value</td>
+                                <td id="timer2_min_temp">value</td>
+                                <td id="timer2_offset_value">value</td>
+                                <td id="timer2_enabled">value</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- row for enabling timer -->
+                    <div class="row px-3">
+                        <div class="col-8 text-left">
+                            <p>Ativar Aquecimento automático</p>
+                        </div>
+                        <div class="col-4 text-center align-middle">
+                            <label class="switch switch-green">
+                                <input id="heating2_auto" type="checkbox" class="switch-input"
+                                       onclick="toggleHeating(2);">
+                                <span class="switch-label" data-on="Auto" data-off="Off"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- row for setting timer start and end -->
+                    <div class="row">
+                        <!-- add card for starting timer -->
+                        <div class="card col-12 border-0">
+                            <div class="card-header text-white text-center bg-info">
+                                Horário 2: inicio
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <label><input type="radio" name="timer2_start_selection" value="dawn" onclick="toggle_timer('timer2_start_config', 2, false);" checked/> Amanhecer </label>
+                                </div>
+                                <div class="row">
+                                    <label><input type="radio" name="timer2_start_selection" value="dusk" onclick="toggle_timer('timer2_start_config', 2, false);"/> Anoitecer </label>
+                                </div>
+                                <div class="row">
+                                    <label><input type="radio" name="timer2_start_selection" value="timer" onclick="toggle_timer('timer2_start_config', 2, true);"/> Horário </label>
+                                </div>
+                                <div class="row" id="timer2_start_config" hidden>
+                                    <div>
+                                        <input class="form-control" type="time" value="07:00" id="timer2_start_time">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- add card for ending timer -->
+                        <div class="card col-12 border-0">
+                            <div class="card-header text-white text-center bg-info">
+                                Horário 2: Fim
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <label><input type="radio" name="timer2_end_selection" value="dawn" onclick="toggle_timer('timer2_end_config', 2, false);" checked/> Amanhecer </label>
+                                </div>
+                                <div class="row">
+                                    <label><input type="radio" name="timer2_end_selection" value="dusk" onclick="toggle_timer('timer2_end_config', 2, false);"/> Anoitecer </label>
+                                </div>
+                                <div class="row">
+                                    <label><input type="radio" name="timer2_end_selection" value="timer" onclick="toggle_timer('timer2_end_config', 2, true);"/> Horário </label>
+                                </div>
+                                <div class="row" id="timer2_end_config" hidden>
+                                    <div>
+                                        <input class="form-control" type="time" value="09:00" id="timer2_end_time">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-right">
+                    <a id="timer2_button" class="btn btn-sm btn-outline-secondary"
+                       onclick="toggleTimerConfig(2);">Aplicar</a>
                 </div>
             </div>
         </div> <!-- END OF MENU 1-->
